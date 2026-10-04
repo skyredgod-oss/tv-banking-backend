@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ตารางผู้ใช้งานระบบ (เพิ่มใหม่)
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String    // รหัสผ่าน (เดี๋ยวเราจะเข้ารหัสทีหลัง)
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  accounts  Account[] // 1 User สามารถมีได้หลาย Account
+}
+
+// ตารางข้อมูลบัญชีผู้ใช้
+model Account {
+  id            Int           @id @default(autoincrement())
+  accountName   String
+  accountNumber String        @unique
+  balance       Float         @default(0.0)
+  currency      String        @default("THB")
+  status        String        @default("active")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // เพิ่มความสัมพันธ์ชี้ไปที่ User
+  userId        Int?          
+  user          User?         @relation(fields: [userId], references: [id])
+  
+  transactions  Transaction[] 
+}
+
+// ตารางประวัติธุรกรรม (เหมือนเดิม)
+model Transaction {
+  id            Int      @id @default(autoincrement())
+  accountId     Int
+  type          String   // 'deposit' | 'withdraw' | 'transfer'
+  amount        Float
+  description   String?
+  balanceBefore Float
+  balanceAfter  Float
+  createdAt     DateTime @default(now())
+  
+  account       Account  @relation(fields: [accountId], references: [id])
+}
