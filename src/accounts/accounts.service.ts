@@ -20,8 +20,12 @@ export class AccountsService {
     });
   }
 
-  async findAll() {
+  // แก้ไขตรงนี้: เพิ่ม userId เพื่อกรองเฉพาะบัญชีของคนที่ล็อกอิน
+  async findAll(userId: number) {
     return this.prisma.account.findMany({
+      where: {
+        userId: userId, 
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -68,6 +72,7 @@ export class AccountsService {
       account: closedAccount
     };
   }
+
   async deposit(id: number, amount: number, description?: string) {
     // 1. ดึงข้อมูลบัญชีเดิมมาก่อนเพื่อดูยอดเงินปัจจุบัน
     const account = await this.findOne(id);
@@ -95,6 +100,7 @@ export class AccountsService {
       return updatedAccount;
     });
   }
+
   async withdraw(id: number, amount: number, description?: string) {
     // 1. ดึงข้อมูลบัญชีมาเช็กยอดเงินปัจจุบัน
     const account = await this.findOne(id);
@@ -127,6 +133,7 @@ export class AccountsService {
       return updatedAccount;
     });
   }
+
   async transfer(fromId: number, toId: number, amount: number, description?: string) {
     // 1. ตรวจสอบว่าห้ามโอนเข้าบัญชีตัวเอง
     if (fromId === toId) {
@@ -187,6 +194,7 @@ export class AccountsService {
       };
     });
   }
+
   async getStatement(accountId: number) {
     // 1. เช็กก่อนว่ามีบัญชีนี้จริงๆ ไหม
     await this.findOne(accountId);

@@ -15,9 +15,11 @@ export class AccountsController {
     return this.accountsService.create(createAccountDto, userId);
   }
 
+  // แก้ไขตรงนี้: รับ Req เพื่อดึง userId ไปใช้กรองข้อมูลบัญชี
   @Get()
-  findAll() {
-    return this.accountsService.findAll();
+  findAll(@Req() req: any) {
+    const userId = req.user.userId;
+    return this.accountsService.findAll(userId);
   }
 
   @Get(':id')
@@ -34,6 +36,7 @@ export class AccountsController {
   remove(@Param('id') id: string) {
     return this.accountsService.remove(+id);
   }
+  
   @Post(':id/deposit')
   deposit(
     @Param('id', ParseIntPipe) id: number,
@@ -42,6 +45,7 @@ export class AccountsController {
   ) {
     return this.accountsService.deposit(id, amount, description);
   }
+  
   @Post(':id/withdraw')
   withdraw(
     @Param('id', ParseIntPipe) id: number,
@@ -50,6 +54,7 @@ export class AccountsController {
   ) {
     return this.accountsService.withdraw(id, amount, description);
   }
+  
   @Post(':id/transfer')
   transfer(
     @Param('id', ParseIntPipe) fromId: number,
@@ -59,6 +64,7 @@ export class AccountsController {
   ) {
     return this.accountsService.transfer(fromId, toId, amount, description);
   }
+  
   @Get(':id/transactions')
   getStatement(@Param('id', ParseIntPipe) id: number) {
     return this.accountsService.getStatement(id);
