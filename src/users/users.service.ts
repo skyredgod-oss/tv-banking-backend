@@ -78,7 +78,6 @@ export class UsersService {
     // เช็กก่อนว่ามีบัญชีไหม
     await this.findOne(id);
 
-    // ทำการเปลี่ยน Status เป็น 'closed' แทนการใช้คำสั่ง delete
     const closedAccount = await this.prisma.account.update({
       where: { id },
       data: { status: 'closed' },
